@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Watch and Build FloralDesignStudio",
+            "type": "shell",
+            "command": "fswatch -o . | xargs -n1 -I{} xcodebuild -project FloralDesignStudio.xcodeproj -scheme FloralDesignStudio -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 14'",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true,
+                "focus": true
+            },
+            "problemMatcher": {
+                "owner": "swift",
+                "fileLocation": ["relative", "${workspaceFolder}"],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Build started",
+                    "endsPattern": "^Build (succeeded|failed)"
+                }
+            },
+            "runOptions": {
+                "runOn": "folderOpen",
+                "instanceLimit": 1
+            }
+        }
+    ]
+}

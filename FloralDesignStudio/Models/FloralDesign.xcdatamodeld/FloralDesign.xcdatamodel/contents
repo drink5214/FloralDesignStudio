@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23B74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="ClientEntity" representedClassName="ClientEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="phone" optional="YES" attributeType="String"/>
+        <relationship name="designs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DesignEntity" inverseName="client" inverseEntity="DesignEntity"/>
+        <relationship name="moodBoards" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MoodBoardEntity" inverseName="client" inverseEntity="MoodBoardEntity"/>
+    </entity>
+    <entity name="DesignEntity" representedClassName="DesignEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="designDescription" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="status" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="client" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClientEntity" inverseName="designs" inverseEntity="ClientEntity"/>
+        <relationship name="designer" maxCount="1" deletionRule="Nullify" destinationEntity="UserEntity" inverseName="designs" inverseEntity="UserEntity"/>
+        <relationship name="moodBoard" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="MoodBoardEntity" inverseName="design" inverseEntity="MoodBoardEntity"/>
+    </entity>
+    <entity name="ImageEntity" representedClassName="ImageEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="caption" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imagePath" attributeType="String"/>
+        <attribute name="uploadedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="moodBoard" maxCount="1" deletionRule="Nullify" destinationEntity="MoodBoardEntity" inverseName="images" inverseEntity="MoodBoardEntity"/>
+    </entity>
+    <entity name="MoodBoardEntity" representedClassName="MoodBoardEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="moodBoardDescription" optional="YES" attributeType="String"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="client" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ClientEntity" inverseName="moodBoards" inverseEntity="ClientEntity"/>
+        <relationship name="design" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DesignEntity" inverseName="moodBoard" inverseEntity="DesignEntity"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ImageEntity" inverseName="moodBoard" inverseEntity="ImageEntity"/>
+    </entity>
+    <entity name="UserEntity" representedClassName="UserEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="email" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="role" attributeType="String"/>
+        <attribute name="username" attributeType="String"/>
+        <relationship name="designs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DesignEntity" inverseName="designer" inverseEntity="DesignEntity"/>
+    </entity>
+</model>
