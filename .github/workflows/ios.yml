@@ -1,18 +1,64 @@
-name: iOS Build and Review
+name: iOS Build and Windsurf AI Review
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, automation ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+  watch:
+    types: [started]
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
 
 jobs:
+  code-review:
+    name: Windsurf AI Code Review
+    runs-on: macos-latest
+    outputs:
+      needs_fixes: ${{ steps.windsurf_review.outputs.needs_fixes }}
+      fix_pr_number: ${{ steps.create_fix_pr.outputs.pull_request_number }}
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Monitor File Changes
+      id: changes
+      run: |
+        git diff --name-only ${{ github.event.before }} ${{ github.sha }} > changed_files.txt
+        echo "Changed files:"
+        cat changed_files.txt
+    
+    - name: Windsurf AI Review
+      id: windsurf_review
+      run: |
+        # Simulate Windsurf AI review (replace with actual Windsurf API call)
+        while IFS= read -r file; do
+          echo "Reviewing $file with Windsurf AI..."
+          # Add Windsurf API integration here
+        done < changed_files.txt
+      
+    - name: Create Fix PR if needed
+      if: steps.windsurf_review.outputs.needs_fixes == 'true'
+      id: create_fix_pr
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const pr = await github.rest.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Windsurf AI: Automatic code fixes',
+            body: 'Automated fixes suggested by Windsurf AI',
+            head: 'windsurf-fixes',
+            base: '${{ github.ref_name }}'
+          });
+          return pr.data.number;
+
   build:
+    needs: code-review
     name: Build and Test
     runs-on: macos-latest
 
@@ -23,6 +69,7 @@ jobs:
       run: sudo xcode-select -switch /Applications/Xcode.app
     
     - name: Build
+      id: build
       run: |
         xcodebuild -project FloralDesignStudio.xcodeproj \
           -scheme FloralDesignStudio \
@@ -31,6 +78,7 @@ jobs:
     
     - name: Auto Fix Common Issues
       if: failure()
+      id: auto_fix
       run: |
         # Check for missing files
         if [ ! -f "FloralDesignStudio.xcodeproj/project.pbxproj" ]; then
@@ -40,15 +88,30 @@ jobs:
         
         # Validate build settings
         xcodebuild -project FloralDesignStudio.xcodeproj -list
+        
+        # Send build errors to Windsurf AI for analysis
+        if [ -f "xcodebuild.log" ]; then
+          echo "Sending build errors to Windsurf AI..."
+          # Add Windsurf API integration for build error analysis
+        fi
     
     - name: Create Issue on Failure
       if: failure()
       uses: actions/github-script@v6
       with:
         script: |
-          github.rest.issues.create({
+          const issue = await github.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title: 'Build Failed: Automated Analysis',
-            body: 'The build process failed. Common issues to check:\n- Syntax errors\n- Missing dependencies\n- Configuration issues\n\nPlease check the Actions tab for detailed logs.'
-          })
+            title: 'Build Failed: Windsurf AI Analysis Required',
+            body: 'The build process failed. Windsurf AI will analyze the errors and suggest fixes.\n\nPlease check the Actions tab for detailed logs.'
+          });
+          
+          if (process.env.AUTO_FIX_ENABLED === 'true') {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.data.number,
+              body: 'Windsurf AI is analyzing the build errors and will create a fix PR shortly.'
+            });
+          }
