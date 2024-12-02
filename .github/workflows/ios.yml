@@ -2,53 +2,26 @@ name: iOS Build and Review
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, automation ]
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: read
-  issues: write
-  pull-requests: write
-
 jobs:
-  build:
-    name: Build and Test
+  build-and-review:
     runs-on: macos-latest
-
+    
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     
-    - name: Select Xcode
-      run: sudo xcode-select -switch /Applications/Xcode.app
-    
-    - name: Build
-      run: |
-        xcodebuild -project FloralDesignStudio.xcodeproj \
-          -scheme FloralDesignStudio \
-          -destination 'platform=iOS Simulator,name=iPhone 14 Pro,OS=latest' \
-          build
-    
-    - name: Auto Fix Common Issues
-      if: failure()
-      run: |
-        # Check for missing files
-        if [ ! -f "FloralDesignStudio.xcodeproj/project.pbxproj" ]; then
-          echo "Error: Project file missing"
-          exit 1
-        fi
-        
-        # Validate build settings
-        xcodebuild -project FloralDesignStudio.xcodeproj -list
-    
-    - name: Create Issue on Failure
-      if: failure()
-      uses: actions/github-script@v6
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
       with:
-        script: |
-          github.rest.issues.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: 'Build Failed: Automated Analysis',
-            body: 'The build process failed. Common issues to check:\n- Syntax errors\n- Missing dependencies\n- Configuration issues\n\nPlease check the Actions tab for detailed logs.'
-          })
+        xcode-version: latest-stable
+    
+    - name: Build iOS app
+      run: |
+        xcodebuild clean build \
+          -scheme FloralDesignStudio \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
