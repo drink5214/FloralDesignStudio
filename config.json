@@ -1,0 +1,13 @@
+{
+  "xcode": {
+    "project_path": "FloralDesignStudio.xcodeproj",
+    "scheme": "FloralDesignStudio",
+    "configuration": "Debug"
+  },
+  "windsurf": {
+    "api_endpoint": "http://localhost:8080",
+    "auth_token": "YOUR_AUTH_TOKEN"
+  },
+  "watch_paths": ["./FloralDesignStudio"],
+  "max_retry_attempts": 3
+}
