@@ -1,42 +1,70 @@
 import SwiftUI
 
 struct MainLandingPage: View {
-    @StateObject private var appState = AppState()
+    @EnvironmentObject var appState: AppState
+    
+    struct GreenButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color(red: 0.4, green: 0.8, blue: 0.4)) // Default green color
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .scaleEffect(configuration.isPressed ? 0.95 : 1)
+        }
+    }
     
     var body: some View {
         NavigationView {
-            ZStack {
-                VStack(spacing: 20) {
-                    Text("Floral Design Studio")
-                        .font(.largeTitle)
-                        .foregroundColor(.green)
-                    
-                    NavigationLink("Mood Board") {
-                        MoodBoardView()
+            VStack(spacing: 20) {
+                Text("Floral Design Studio")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding(.top, 30)
+                
+                Spacer()
+                
+                VStack(spacing: 15) {
+                    NavigationLink(destination: MoodBoardView()) {
+                        Text("Mood Board")
                     }
-                    .buttonStyle(PrimaryButtonStyle())
+                    .buttonStyle(GreenButtonStyle())
+                    
+                    NavigationLink(destination: Text("Floral Plan View")) {
+                        Text("Floral Plan")
+                    }
+                    .buttonStyle(GreenButtonStyle())
+                    
+                    NavigationLink(destination: Text("Floral Contract View")) {
+                        Text("Floral Contract")
+                    }
+                    .buttonStyle(GreenButtonStyle())
+                    
+                    NavigationLink(destination: Text("Chat View")) {
+                        Text("Chat")
+                    }
+                    .buttonStyle(GreenButtonStyle())
                     
                     if appState.isDesigner {
-                        NavigationLink("Client List") {
-                            Text("Client List View")
+                        NavigationLink(destination: Text("Client List View")) {
+                            Text("Client List")
                         }
-                        .buttonStyle(PrimaryButtonStyle())
+                        .buttonStyle(GreenButtonStyle())
                     }
                 }
+                .padding(.horizontal)
+                
+                Spacer()
             }
+            .navigationBarHidden(true)
         }
-        .environmentObject(appState)
     }
 }
 
-struct PrimaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.green)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .padding(.horizontal)
+struct MainLandingPage_Previews: PreviewProvider {
+    static var previews: some View {
+        MainLandingPage()
+            .environmentObject(AppState())
     }
 }

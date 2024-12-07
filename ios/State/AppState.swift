@@ -1,20 +1,23 @@
 import SwiftUI
-import Combine
 
 class AppState: ObservableObject {
     @Published var isDesigner: Bool = false
-    @Published var selectedTab: Int = 0
-    @Published var showingError: Bool = false
-    @Published var errorMessage: String = ""
-    @Published var activePath = NavigationPath()
-    @Published var moodBoardImages: [UIImage] = []
+    @Published var currentUser: User?
+    @Published var selectedMoodBoardImages: [UIImage] = []
     
-    func showError(_ message: String) {
-        errorMessage = message
-        showingError = true
+    struct User {
+        var id: String
+        var name: String
+        var email: String
+        var isDesigner: Bool
     }
     
-    func navigateToRoot() {
-        activePath = NavigationPath()
+    func signIn(email: String, password: String) {
+        // TODO: Implement authentication
+    }
+    
+    func signOut() {
+        currentUser = nil
+        isDesigner = false
     }
 }
