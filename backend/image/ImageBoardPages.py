@@ -1,0 +1,1 @@
+# Image board pages implementation
